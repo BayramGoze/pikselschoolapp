@@ -8,7 +8,7 @@ namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
-        // GET: Home
+        // GET: Home works
         public ActionResult Index()
         {
             return View();
