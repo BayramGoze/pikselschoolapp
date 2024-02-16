@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    @Html.Partial("_Head")
+    
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        @Html.Partial("_SideBar")
+        <!-- Content Wrapper -->
+        @Html.Partial("_Header")
+        @RenderBody()
+
+
+    </div>
+            <!-- End of Main Content -->
+            <!-- Footer -->
+           @Html.Partial("_Footer")
+            <!-- End of Footer -->
+  
+</body>
+
+@Html.Partial("_Scripts")
+
+</html>

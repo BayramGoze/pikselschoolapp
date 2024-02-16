@@ -1,0 +1,332 @@
+﻿@model WebApplication1.ViewModels.Course.StudentViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/vendor/jquery/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var path_to_delete;
+        $(".deleteItem").click(function (e) {
+            path_to_delete = $(this).data('path');
+        });
+        $('#confirmDeleteBtn').click(function () {
+            var id = $('#deleteItem').data('path');
+            $.ajax({
+                type: "GET",
+                url: '/Student/DeleteStudent?Id='+id, // the method we are calling
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    window.location.reload();
+                    $('#confirmDeleteModal').hide();
+                },
+                error: function (result) {
+                    alert('Sistemsel bir hata oluştu!');
+                }
+            });
+        });
+
+        $('.edit').click(function (e) {
+            var id = $(this).data('path');
+            $.ajax({
+                type: "GET",
+                url: '/Student/GetStudent?ID='+id ,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    $('#UpdateModal').modal('show');
+                    $('#StudentName').val(result.StudentName);
+                    $('#CourseId').val(result.CourseId);
+                    $('#CourseAmount').val(result.CourseAmount);
+                    $('#Telephone').val(result.Telephone);
+                    $('#Email').val(result.Email);
+                    $('#IdentityNumber').val(result.IdentityNumber);
+                    $('#Adress').val(result.Adress);
+                    $('#Education').val(result.Education);
+                    $('#PaymentDay').val(result.PaymentDay);
+                    $('#ID').val(result.ID);
+                    $('#PaymentType').val(result.PaymentType);
+                    if (result.Birthday && result.Birthday != null) {                        
+                        $('#BirthDay').val(CalculateDate(result.Birthday));
+                    }                   
+                    $('#InstalmentCount').val(result.InstalmentCount);
+                },
+                error: function (result) {
+                    alert('Sistemsel bir hata oluştu!');
+                }
+            });
+        });
+
+        function CalculateDate(birthDay) {
+            var value = new Date(parseInt(birthDay.toString().substr(6)));
+            var day = ("0" + value.getDate()).slice(-2);
+            var month = ("0" + (value.getMonth() + 1)).slice(-2);
+            return value.getFullYear() + "-" + month + "-" + day;
+        }
+    });
+
+
+
+</script>
+
+
+<div class="container">
+    <div style="overflow-y:auto">
+        <div class="row mb-4 mr-2 float-right">
+            <button data-toggle="modal" data-target="#exampleModalCenter" class="btn btn-primary">Öğrenci Ekle </button>
+        </div>
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>Öğrenci Adı/Soyadı</th>
+                    <th>Kurs</th>
+                    <th>Kurs Tutarı</th>
+                    <th>Telefon</th>
+                    <th>Ödeme Günü</th>
+                    <th>Ödeme Tipi</th>
+                    <th>Taksit</th>
+                    <th>Seçenekler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Students)
+                {
+                    <tr>
+                        <td>@item.StudentName</td>
+                        <td>@item.CourseName</td>
+                        <td>@item.CourseAmount</td>
+                        <td>@item.Telephone</td>
+                        <td>@item.PaymentDay</td>
+                        <td>@item.PaymentName</td>
+                        <td>@item.InstalmentCount</td>
+                        <td>
+                            <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
+                               data-toggle="modal"
+                               data-path="@item.ID">Sil</a>
+                            <a id="edit" 
+                               class="edit"
+                               data-toggle="modal"
+                               data-path="@item.ID">/ Güncelle
+                            </a>
+                            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Silmek istediğinizden emin misiniz?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                                            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                                                <i class="fas fa-trash"></i> Evet, Sil
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal Create Student -->
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    @using (Html.BeginForm("CreateStudent", "Student"))
+    {
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Öğrenci Ekle/Güncelle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group w-100 col-md-12">
+                            <label>Öğrenci Adı</label>
+                            <input type="text" name="StudentName" class="form-control" placeholder="Öğrenci Adınızı Giriniz" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-12">
+                            <label>Kurs Seçimi</label>
+                            <select class="form-select w-100" name="CourseId" aria-label="Default select example">
+                                <option selected>Kurs Seçiniz</option>
+                                @foreach (var item in @Model.Courses)
+                                {
+                                    <option value="@item.Id">@item.CourseName</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Kurs Ücreti</label>
+                            <input type="text" name="CourseAmount" class="form-control" placeholder="Kurs Ücreti" />
+                        </div>
+                        <div class="form-group w-100 col-md-6">
+                            <label>Telefon</label>
+                            <input type="tel" name="Telephone" class="form-control" placeholder="Telefon Numarası" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Email</label>
+                            <input type="text" name="Email" class="form-control" placeholder="Email Adresi" />
+                        </div>
+                        <div class="form-group w-100 col-md-6">
+                            <label>TC Numarası</label>
+                            <input type="text" name="IdentityNumber" class="form-control" placeholder="Tc Kimlik Numarası" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Adres</label>
+                            <input type="text" name="Adress" class="form-control" placeholder="Öğrencinin Adresi" />
+                        </div>
+                        <div class="form-group w-100 col-md-6">
+                            <label>Eğitim Durumu</label>
+                            <input type="text" name="Education" class="form-control" placeholder="Öğrencinin Eğitim Durumu" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Ödeme Günü</label>
+                            <input type="text" name="PaymentDay" class="form-control" placeholder="Ödeme Günü" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Ödeme Tipi</label>
+                            <select class="form-select w-100" name="PaymentType" aria-label="Default select example">
+                                <option selected>Ödeme Tipi Seçiniz</option>
+                                <option value="0">Peşin</option>
+                                <option value="1">Kredi Kartı</option>
+                                <option value="2">Taksit</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label>Doğum Tarihi</label>
+                            <input type="date" name="BirthDay" class="form-control" placeholder="Doğum Tarihi" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Taksit Sayısı</label>
+                            <input type="text" name="InstalmentCount" class="form-control" placeholder="Taksit Sayısı" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<!-- Modal Update Student -->
+<div class="modal fade" id="UpdateModal" tabindex="-1" role="dialog" aria-labelledby="UpdateModalCenterTitle" aria-hidden="true">
+    @using (Html.BeginForm("UpdateStudent", "Student"))
+    {
+        <input type="hidden" name="id" id="ID" />
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="UpdateModalLongTitle">Öğrenci Ekle/Güncelle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group w-100 col-md-12">
+                            <label>Öğrenci Adı</label>
+                            <input type="text" id="StudentName" name="StudentName" class="form-control" placeholder="Öğrenci Adınızı Giriniz" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-12">
+                            <label>Kurs Seçiniz</label>
+                            <select class="form-select w-100" id="CourseId" name="CourseId" aria-label="Default select example">
+                                <option selected>Kurs Seçiniz</option>
+                                @foreach (var item in @Model.Courses)
+                                {
+                                    <option value="@item.Id">@item.CourseName</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Kurs Ücreti</label>
+                            <input type="text" id="CourseAmount" name="CourseAmount" class="form-control" placeholder="Kurs Ücreti" />
+                        </div>
+                        <div class="form-group w-100 col-md-6">
+                            <label>Telefon</label>
+                            <input type="tel" id="Telephone" name="Telephone" class="form-control" placeholder="Telefon Numarası" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Email</label>
+                            <input type="text" id="Email" name="Email" class="form-control" placeholder="Email Adresi" />
+                        </div>
+                        <div class="form-group w-100 col-md-6">
+                            <label>Tc No</label>
+                            <input type="text" id="IdentityNumber" name="IdentityNumber" class="form-control" placeholder="Tc Kimlik Numarası" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Adres</label>
+                            <input type="text" id="Adress" name="Adress" class="form-control" placeholder="Öğrencinin Adresi" />
+                        </div>
+                        <div class="form-group w-100 col-md-6">
+                            <label>Eğitim Durumu</label>
+                            <input type="text" id="Education" name="Education" class="form-control" placeholder="Öğrencinin Eğitim Durumu" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="form-group w-100 col-md-6">
+                            <label>Ödeme Günü</label>
+                            <input type="text" id="PaymentDay" name="PaymentDay" class="form-control" placeholder="Ödeme Günü" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Ödeme Tipi</label>
+                            <select class="form-select w-100" id="PaymentType" name="PaymentType" aria-label="Default select example">
+                                <option selected>Ödeme Tipi Seçiniz</option>
+                                <option value="0">Peşin</option>
+                                <option value="1">Kredi Kartı</option>
+                                <option value="2">Taksit</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label>Doğum Günü</label>
+                            <input type="date" id="BirthDay" name="BirthDay" class="form-control" placeholder="Doğum Tarihi" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Taksit Sayısı</label>
+                            <input type="text" id="InstalmentCount" name="InstalmentCount" class="form-control" placeholder="Taksit Sayısı" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

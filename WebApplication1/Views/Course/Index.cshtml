@@ -1,0 +1,257 @@
+﻿@model WebApplication1.ViewModels.Course.CourseViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/vendor/jquery/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var path_to_delete;
+        $(".deleteItem").click(function (e) {
+            path_to_delete = $(this).data('path');
+        });
+        $('#confirmDeleteBtn').click(function () {
+            $.ajax({
+                type: "GET",
+                url: path_to_delete, // the method we are calling
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    window.location.reload();
+                    $('#confirmDeleteModal').hide();
+                },
+                error: function (result) {
+                    alert('Sistemsel bir hata oluştu!');
+                }
+            });
+        });
+
+        $('.edit').click(function (e) {
+           
+            var id = $(this).data('path');
+            $.ajax({
+                type: "GET",
+                url: '/Course/GetCourse?ID=' + id,
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    $('#UpdateModal').modal('show');
+                    $('#CourseName').val(result.CourseName);                                  
+                    $('#InstructorId').val(result.InstructorId);
+                    $('#Id').val(result.Id);
+
+                    
+                    if (result.StartDate && result.StartDate != null) {
+                        $('#StartDate').val(CalculateDate(result.StartDate));
+                    }
+
+                    if (result.EndDate && result.EndDate != null) {
+                        $('#EndDate').val(CalculateDate(result.EndDate));
+                    }
+                    
+                },
+                error: function (result) {
+                    alert('Sistemsel bir hata oluştu!');
+                }
+            });
+        });
+
+        function CalculateDate(startEndDay) {
+            var value = new Date(parseInt(startEndDay.toString().substr(6)));
+            var day = ("0" + value.getDate()).slice(-2);
+            var month = ("0" + (value.getMonth() + 1)).slice(-2);
+            return value.getFullYear() + "-" + month + "-" + day;
+        }
+    });
+
+
+
+</script>
+<div class="container">
+    <div class="row mb-4 mr-2 float-right">
+        <button data-toggle="modal" data-target="#exampleModalCenter" class="btn btn-primary">Ders Ekle</button>
+    </div>
+    <table class="table table-bordered text-center">
+        <thead>
+            <tr>
+                <th>Ders Adı</th>
+                <th>Başlangıç Tarihi</th>
+                <th>Bitiş Tarihi</th>
+                <th>Ders Eğitmeni</th>
+                <th>Seçenekler</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Courses)
+            {
+                <tr>
+                    <td>@item.CourseName</td>
+                    @if (item.StartDate.HasValue)
+                    {
+                        <td> @item.StartDate.Value.ToShortDateString()</td>
+                    }
+                    else
+                    {
+                        <td>-</td>
+                    }
+                    @if (item.EndDate.HasValue)
+                    {
+                        <td>@item.EndDate.Value.ToShortDateString()</td>
+                    }
+                    else
+                    {
+                        <td>-</td>
+                    }
+                    <td>@item.InstructorName</td>
+                    <td>
+                        <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
+                           data-toggle="modal"
+                           data-path="@Url.Action("DeleteCourse", "Course", new { id = item.Id })">
+                            Sil
+                        </a>
+                        <a id="edit"
+                           class="edit"
+                           data-toggle="modal"
+                           data-path="@item.Id">/ Güncelle</a>
+
+                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Silmek istediğinizden emin misiniz?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                                            <i class="fas fa-trash"></i> Evet, Sil
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+
+
+<!-- Modal Course Create -->
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    @using (Html.BeginForm("CreateCourse", "Course"))
+    {
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Ders Ekle/Güncelle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <label>Ders Adı</label>
+                            <input type="text" name="CourseName" class="form-control" placeholder="Ders Adınızı Giriniz" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <label>Başlangıç Tarihi</label>
+                            <input type="date" name="StartDate" class="form-control" placeholder="Başlangıç Tarihi" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <label>Bitiş Tarihi</label>
+                            <input type="date" name="EndDate" class="form-control" placeholder="Bitiş Tarihi" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <select class="form-select w-100" name="InstructorId" aria-label="Default select example">
+                                <option selected>Eğitmen Seçiniz</option>
+                                @foreach (var item in @Model.Instructors)
+                                {
+                                    <option value="@item.Id">@item.InstructorName</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal Course Udpate -->
+
+<div class="modal fade" id="UpdateModal" tabindex="-1" role="dialog" aria-labelledby="UpdateModalCenterTitle" aria-hidden="true">
+    @using (Html.BeginForm("UpdateCourse", "Course"))
+    {
+        <input type="hidden" name="id" id="Id" />
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Ders Ekle/Güncelle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <label>Ders Adı</label>
+                            <input type="text" id="CourseName" name="CourseName" class="form-control" placeholder="Ders Adınızı Giriniz" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <label>Başlangıç Tarihi</label>
+                            <input type="date" id="StartDate" name="StartDate" class="form-control" placeholder="Başlangıç Tarihi" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <label>Bitiş Tarihi</label>
+                            <input type="date" id="EndDate" name="EndDate" class="form-control" placeholder="Bitiş Tarihi" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group w-100">
+                            <select class="form-select w-100" id="InstructorId" name="InstructorId" aria-label="Default select example">
+                                <option selected>Eğitmen Seçiniz</option>
+                                @foreach (var item in @Model.Instructors)
+                                {
+                                    <option value="@item.Id">@item.InstructorName</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
