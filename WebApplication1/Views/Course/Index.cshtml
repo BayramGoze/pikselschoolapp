@@ -12,9 +12,10 @@
             path_to_delete = $(this).data('path');
         });
         $('#confirmDeleteBtn').click(function () {
+            var id = $('#deleteItem').data('path');
             $.ajax({
                 type: "GET",
-                url: path_to_delete, // the method we are calling
+                url: '/Course/DeleteCourse?ID=' + id, // the method we are calling
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
                     window.location.reload();
@@ -27,7 +28,7 @@
         });
 
         $('.edit').click(function (e) {
-           
+
             var id = $(this).data('path');
             $.ajax({
                 type: "GET",
@@ -35,11 +36,11 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
                     $('#UpdateModal').modal('show');
-                    $('#CourseName').val(result.CourseName);                                  
+                    $('#CourseName').val(result.CourseName);
                     $('#InstructorId').val(result.InstructorId);
                     $('#Id').val(result.Id);
 
-                    
+
                     if (result.StartDate && result.StartDate != null) {
                         $('#StartDate').val(CalculateDate(result.StartDate));
                     }
@@ -47,7 +48,7 @@
                     if (result.EndDate && result.EndDate != null) {
                         $('#EndDate').val(CalculateDate(result.EndDate));
                     }
-                    
+
                 },
                 error: function (result) {
                     alert('Sistemsel bir hata oluştu!');
@@ -67,80 +68,116 @@
 
 </script>
 <div class="container">
-    <div class="row mb-4 mr-2 float-right">
-        <button data-toggle="modal" data-target="#exampleModalCenter" class="btn btn-primary">Ders Ekle</button>
-    </div>
-    <table class="table table-bordered text-center">
-        <thead>
-            <tr>
-                <th>Ders Adı</th>
-                <th>Başlangıç Tarihi</th>
-                <th>Bitiş Tarihi</th>
-                <th>Ders Eğitmeni</th>
-                <th>Seçenekler</th>
-            </tr>
-        </thead>
+    <div style="overflow-y:auto">
+        <div class="row mb-4 mr-2 float-right">
+            <button data-toggle="modal" data-target="#exampleModalCenter" class="btn btn-primary">Ders Ekle</button>
+        </div>
+        @if (Model.Courses?.Count == 0)
+        {
+            <style>
+                .alert-container {
+                    text-align: center;
+                    padding: 20px;
+                    background-color: #f8d7da; /* Kırmızıya yakın bir renk */
+                    color: #721c24; /* Koyu renk metin */
+                    border: 1px solid #f5c6cb; /* Çerçeve rengi */
+                    border-radius: 5px; /* Kenar yumuşatma */
+                    margin-top: 60px;
+                }
 
-        <tbody>
-            @foreach (var item in Model.Courses)
-            {
-                <tr>
-                    <td>@item.CourseName</td>
-                    @if (item.StartDate.HasValue)
-                    {
-                        <td> @item.StartDate.Value.ToShortDateString()</td>
-                    }
-                    else
-                    {
-                        <td>-</td>
-                    }
-                    @if (item.EndDate.HasValue)
-                    {
-                        <td>@item.EndDate.Value.ToShortDateString()</td>
-                    }
-                    else
-                    {
-                        <td>-</td>
-                    }
-                    <td>@item.InstructorName</td>
-                    <td>
-                        <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
-                           data-toggle="modal"
-                           data-path="@Url.Action("DeleteCourse", "Course", new { id = item.Id })">
-                            Sil
-                        </a>
-                        <a id="edit"
-                           class="edit"
-                           data-toggle="modal"
-                           data-path="@item.Id">/ Güncelle</a>
+                .alert-icon {
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                }
 
-                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Silmek istediğinizden emin misiniz?</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
-                                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-                                            <i class="fas fa-trash"></i> Evet, Sil
-                                        </button>
+                .alert-link {
+                    color: #721c24; /* Bağlantı rengi */
+                    text-decoration: underline;
+                }
+            </style>
+
+
+
+            <div class="alert-container">
+                <i class="fas fa-info-circle alert-icon"></i>
+                Üzgünüz, aradığınız kayıt bulunamadı. Yeni bir kayıt eklemek için <a data-toggle="modal" data-target="#exampleModalCenter" class="alert-link">buraya tıklayın</a>.
+            </div>
+        }
+
+        else
+        {
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>Ders Adı</th>
+                        <th>Başlangıç Tarihi</th>
+                        <th>Bitiş Tarihi</th>
+                        <th>Ders Eğitmeni</th>
+                        <th>Seçenekler</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.Courses)
+                    {
+                        <tr>
+                            <td>@item.CourseName</td>
+                            @if (item.StartDate.HasValue)
+                            {
+                                <td> @item.StartDate.Value.ToShortDateString()</td>
+                            }
+                            else
+                            {
+                                <td>-</td>
+                            }
+                            @if (item.EndDate.HasValue)
+                            {
+                                <td>@item.EndDate.Value.ToShortDateString()</td>
+                            }
+                            else
+                            {
+                                <td>-</td>
+                            }
+                            <td>@item.InstructorName</td>
+                            <td>
+                                <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
+                                   data-toggle="modal"
+                                   data-path="@item.Id "><i class="fas fa-trash" style="color: #e74a3b"></i></a>
+                                <a id="edit"
+                                   class="edit"
+                                   data-toggle="modal"
+                                   data-path="@item.Id"><i class="fas fa-edit" style="color:darkgreen"></i></a>
+
+                                <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Silmek istediğinizden emin misiniz?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                                                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                                                    <i class="fas fa-trash"></i> Evet, Sil
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
 
-    </table>
+            </table>
+
+        }
+    </div>
 </div>
 
 

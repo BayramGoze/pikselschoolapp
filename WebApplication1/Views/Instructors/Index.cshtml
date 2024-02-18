@@ -12,7 +12,7 @@
         $(".deleteItem").click(function (e) {
             path_to_delete = $(this).data('path');
         });
-        $('#confirmDeleteBtn').click(function () {           
+        $('#confirmDeleteBtn').click(function () {
             var id = $('#deleteItem').data('path').trim();
             $.ajax({
                 type: "GET",
@@ -28,7 +28,7 @@
             });
         });
 
-        $('.edit').click(function (e) {           
+        $('.edit').click(function (e) {
             var id = $(this).data('path');
             $.ajax({
                 type: "GET",
@@ -38,8 +38,8 @@
                     $('#UpdateModal').modal('show');
                     $('#InstructorName').val(result.InstructorName);
                     $('#InstructorExpert').val(result.InstructorExpert);
-                    $('#InstructorAge').val(result.InstructorAge);  
-                    $('#Id').val(result.Id);                  
+                    $('#InstructorAge').val(result.InstructorAge);
+                    $('#Id').val(result.Id);
                 },
                 error: function (result) {
                     alert('Sistemsel bir hata oluştu!');
@@ -54,150 +54,187 @@
 
 
 <div class="container">
-    <div class="row mb-4 mr-2 float-right">
-        <button data-toggle="modal" data-target="#exampleModalCenter" class="btn btn-primary">Eğitmen Ekle </button>
-    </div>
-    <table class="table table-bordered text-center">
-        <thead>
-            <tr>
-                <th>Eğitmen Adı</th>
-                <th>Eğitmen Branşı</th>
-                <th>Eğitmen Yaşı</th>
-                <th>Seçenekler</th>
+    <div style="overflow-y:auto">
+        <div class="row mb-4 mr-2 float-right">
+            <button data-toggle="modal" data-target="#exampleModalCenter" class="btn btn-primary">Eğitmen Ekle </button>
+        </div>
+        @if (Model.Instructors?.Count == 0)
+        {
+            <style>
+                .alert-container {
+                    text-align: center;
+                    padding: 20px;
+                    background-color: #f8d7da; /* Kırmızıya yakın bir renk */
+                    color: #721c24; /* Koyu renk metin */
+                    border: 1px solid #f5c6cb; /* Çerçeve rengi */
+                    border-radius: 5px; /* Kenar yumuşatma */
+                    margin-top: 60px;
+                }
 
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Instructors)
-            {
-                <tr>
-                    <td>
-                        @item.InstructorName
-                    </td>
-                    <td>
-                        @item.InstructorExpert
-                    </td>
-                    <td>
-                        @item.InstructorAge
-                    </td>
-                    <td>
-                        <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
-                           data-toggle="modal"
-                           data-path="@item.Id ">Sil</a>
-                        <a id="edit"
-                           class="edit"
-                           data-toggle="modal"
-                           data-path="@item.Id">/ Güncelle</a>
+                .alert-icon {
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                }
 
-                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Silmek istediğinizden emin misiniz?</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
-                                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-                                            <i class="fas fa-trash"></i> Evet, Sil
-                                        </button>
+                .alert-link {
+                    color: #721c24; /* Bağlantı rengi */
+                    text-decoration: underline;
+                }
+            </style>
+
+
+
+            <div class="alert-container">
+                <i class="fas fa-info-circle alert-icon"></i>
+                Üzgünüz, aradığınız kayıt bulunamadı. Yeni bir kayıt eklemek için <a data-toggle="modal" data-target="#exampleModalCenter" class="alert-link">buraya tıklayın</a>.
+            </div>
+        }
+
+        else
+        {
+            <p>Toplam Kayıt Sayısı: @Model.Instructors.Count</p>
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>Eğitmen Adı</th>
+                        <th>Eğitmen Branşı</th>
+                        <th>Eğitmen Yaşı</th>
+                        <th>Seçenekler</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Instructors)
+                    {
+                        <tr>
+                            <td>
+                                @item.InstructorName
+                            </td>
+                            <td>
+                                @item.InstructorExpert
+                            </td>
+                            <td>
+                                @item.InstructorAge
+                            </td>
+                            <td>
+                                <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
+                                   data-toggle="modal"
+                                   data-path="@item.Id "> <i class="fas fa-trash" style="color: #e74a3b"></i></a>
+                                <a id="edit"
+                                   class="edit"
+                                   data-toggle="modal"
+                                   data-path="@item.Id"><i class="fas fa-edit" style="color:darkgreen"></i></a>
+
+                                <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Silmek istediğinizden emin misiniz?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                                                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                                                    <i class="fas fa-trash"></i> Evet, Sil
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+    @*modal create ınstructor*@
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        @using (Html.BeginForm("CreateInstructor", "Instructors"))
+        {
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Eğitmen Ekle/Güncelle</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group w-100">
+                                <label>Eğitmen Adı</label>
+                                <input type="text" name="InstructorName" class="form-control" placeholder="Eğitmen Adını Giriniz" />
                             </div>
                         </div>
-                    </td>
-                </tr>
-            }
-
-        </tbody>
-    </table>
-</div>
-
-@*modal create ınstructor*@
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    @using (Html.BeginForm("CreateInstructor", "Instructors"))
-    {
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Eğitmen Ekle/Güncelle</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="form-group w-100">
-                            <label>Eğitmen Adı</label>
-                            <input type="text" name="InstructorName" class="form-control" placeholder="Eğitmen Adını Giriniz" />
+                        <div class="row">
+                            <div class="form-group w-100">
+                                <label>Eğitmen Branşı</label>
+                                <input type="text" name="InstructorExpert" class="form-control" placeholder="Eğitmen Branşını Giriniz" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group w-100">
+                                <label>Eğitmen Yaşı</label>
+                                <input type="number" min="0" name="InstructorAge" class="form-control" placeholder="Eğitmen Yaşını Giriniz" />
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group w-100">
-                            <label>Eğitmen Branşı</label>
-                            <input type="text" name="InstructorExpert" class="form-control" placeholder="Eğitmen Branşını Giriniz" />
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
                     </div>
-                    <div class="row">
-                        <div class="form-group w-100">
-                            <label>Eğitmen Yaşı</label>
-                            <input type="number" min="0" name="InstructorAge" class="form-control" placeholder="Eğitmen Yaşını Giriniz" />
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-primary">Kaydet</button>
                 </div>
             </div>
-        </div>
-    }
-</div>
-<!-- Modal Update Insructor -->
-<div class="modal fade" id="UpdateModal" tabindex="-1" role="dialog" aria-labelledby="UpdateModalCenterTitle" aria-hidden="true">
-    @using (Html.BeginForm("UpdateInstructor", "Instructors"))
-    {
-        <input type="hidden" name="id" id="Id" />
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="UpdateModalLongTitle">Eğitmen Ekle/Güncelle</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="form-group w-100 col-md-12">
-                            <label>Eğitmen Adı</label>
-                            <input type="text" id="InstructorName" name="InstructorName" class="form-control" placeholder="Eğitmen Adınızı Giriniz" />
-                        </div>
+        }
+    </div>
+    <!-- Modal Update Instructor -->
+    <div class="modal fade" id="UpdateModal" tabindex="-1" role="dialog" aria-labelledby="UpdateModalCenterTitle" aria-hidden="true">
+        @using (Html.BeginForm("UpdateInstructor", "Instructors"))
+        {
+            <input type="hidden" name="id" id="Id" />
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="UpdateModalLongTitle">Eğitmen Ekle/Güncelle</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="row">
-                        <div class="form-group w-100 col-md-6">
-                            <label>Eğitmen Branşı</label>
-                            <input type="text" id="InstructorExpert" name="InstructorExpert" class="form-control" placeholder="Eğitmen Branşı" />
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group w-100 col-md-12">
+                                <label>Eğitmen Adı</label>
+                                <input type="text" id="InstructorName" name="InstructorName" class="form-control" placeholder="Eğitmen Adınızı Giriniz" />
+                            </div>
                         </div>
-                        <div class="form-group w-100 col-md-6">
-                            <label>Telefon</label>
-                            <input type="tel" id="InstructorAge" name="InstructorAge" class="form-control" placeholder="Eğitmen Yaşı" />
+                        <div class="row">
+                            <div class="form-group w-100 col-md-6">
+                                <label>Eğitmen Branşı</label>
+                                <input type="text" id="InstructorExpert" name="InstructorExpert" class="form-control" placeholder="Eğitmen Branşı" />
+                            </div>
+                            <div class="form-group w-100 col-md-6">
+                                <label>Telefon</label>
+                                <input type="tel" id="InstructorAge" name="InstructorAge" class="form-control" placeholder="Eğitmen Yaşı" />
+                            </div>
                         </div>
-                    </div>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
 
 
 

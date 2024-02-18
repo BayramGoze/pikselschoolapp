@@ -68,20 +68,7 @@ namespace WebApplication1.Controllers
 
             return RedirectToAction("Index");
         }
-        public JsonResult DeleteCourse(int id)
-        {
-            using (AcademyContext context = new AcademyContext())
-            {
-                var course = context.Courses.FirstOrDefault(x => x.Id == id);
-                if (course != null)
-                {
-                    course.Deleted = true;
-                    context.Entry(course).State = System.Data.Entity.EntityState.Modified;
-                    context.SaveChangesAsync();
-                }
-            }
-            return Json("Ok", JsonRequestBehavior.AllowGet);
-        }
+       
 
         [HttpGet]
         public JsonResult GetCourse(int ID)
@@ -90,6 +77,20 @@ namespace WebApplication1.Controllers
             {
                 var course = context.Courses.FirstOrDefault(x => x.Id == ID);
                 return Json(course, JsonRequestBehavior.AllowGet);
+            }
+        }
+        [HttpGet]
+        public ActionResult DeleteCourse(int ID)
+        {
+            using (AcademyContext context = new AcademyContext())
+            {
+                var course = context.Courses.FirstOrDefault(x => x.Id == ID);
+                if (course != null)
+                {
+                    course.Deleted = true;
+                    context.SaveChanges();
+                }
+                return Json("Başarılı", JsonRequestBehavior.AllowGet);
             }
         }
     }
