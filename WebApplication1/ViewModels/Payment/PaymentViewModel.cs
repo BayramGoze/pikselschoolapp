@@ -11,6 +11,7 @@ namespace WebApplication1.ViewModels.Payment
         public int? StudentsId { get; set; }
         public string StudentName { get; set; }
         public DateTime? PaymentDate { get; set; }
+        public decimal? Amount { get; set; }
         public int? Installments { get; set; }
         public int? CourseId { get; set; }
         public string CourseName { get; set; }

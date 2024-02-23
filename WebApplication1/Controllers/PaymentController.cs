@@ -26,7 +26,8 @@ namespace WebApplication1.Controllers
                     CourseName = y.CourseId != null ? dbContext.Courses.FirstOrDefault(x => x.Id == y.CourseId).CourseName : string.Empty,
                     PaymentDate = y.PaymentDate,
                     StudentName = y.StudentsId != null ? dbContext.Students.FirstOrDefault(x => x.ID == y.StudentsId).StudentName : string.Empty,
-                    StudentsId = y.StudentsId
+                    StudentsId = y.StudentsId,
+                    Amount=y.Amount
                 }).ToList();
                 vm.Students = dbContext.Students.Where(x => x.Deleted == false).Select(y => new StudentResponseViewModel
                 {
@@ -36,34 +37,33 @@ namespace WebApplication1.Controllers
                 return View(vm);
             }
         }
-        public string GetPaymentName(int paymentType)
-        {
-            switch (paymentType)
-            {
-                case 0:
-                    return "Peşin";
-                case 1:
-                    return "Kredi Kartı";
-                case 2:
-                    return "Taksit";
-                default:
-                    return "-";
-            }
-        }
+        //public string GetPaymentName(int paymentType)
+        //{
+        //    switch (paymentType)
+        //    {
+        //        case 0:
+        //            return "Peşin";
+        //        case 1:
+        //            return "Kredi Kartı";
+        //        case 2:
+        //            return "Taksit";
+        //        default:
+        //            return "-";
+        //    }
+        //}
 
         [HttpPost]
-        public ActionResult CreateStudent(CreateStudentViewModel model)
+        public ActionResult CreatePayment(PaymentViewModel model)
         {
             using (AcademyContext context = new AcademyContext())
             {
-                context.Students.Add(new Students
+                context.Payments.Add(new Payments
                 {
-                    StudentName = model.StudentName,
-                    CourseId = model.CourseId,
-                    CourseAmount = model.CourseAmount,
-                    PaymentDay = model.PaymentDay,
-                    PaymentType = model.PaymentType,
-                    InstalmentCount = model.InstalmentCount,
+                   Amount=model.Amount,
+                   PaymentDate=model.PaymentDate,
+                   StudentsId=model.StudentsId,
+                   CourseId=model.CourseId,
+
                 });
                 context.SaveChanges();
             }

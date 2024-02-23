@@ -7,15 +7,11 @@
 <script>
 
     $(document).ready(function () {
-        var path_to_delete;
-        $(".deleteItem").click(function (e) {
-            path_to_delete = $(this).data('path');
-        });
         $('#confirmDeleteBtn').click(function () {
-            var id = $('#deleteItem').data('path');
+            var deleteItemId = parseInt($('#deleteItemValue').val());
             $.ajax({
                 type: "GET",
-                url: '/Student/DeleteStudent?Id='+id, // the method we are calling
+                url: '/Student/DeleteStudent?Id=' + deleteItemId, // the method we are calling
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
                     window.location.reload();
@@ -26,7 +22,6 @@
                 }
             });
         });
-
         $('.edit').click(function (e) {
             var id = $(this).data('path');
             $.ajax({
@@ -64,6 +59,11 @@
             return value.getFullYear() + "-" + month + "-" + day;
         }
     });
+
+    $(document).on("click", "#deleteItem", function () {
+        $('#deleteItemValue').val($(this).data('path'));
+    });
+
 
 </script>
 
@@ -103,9 +103,10 @@
                 }
                 else
                 {
-                <table class="table table-bordered text-center">
+                <table id="studentTable" class="table table-bordered text-center">
                     <thead>
                         <tr>
+                            <th>Kayıt No</th>
                             <th>Öğrenci Adı/Soyadı</th>
                             <th>Kurs</th>
                             <th>Kurs Tutarı</th>
@@ -120,6 +121,7 @@
                         @foreach (var item in Model.Students)
                         {
                             <tr>
+                                <td>@item.ID</td>
                                 <td>@item.StudentName</td>
                                 <td>@item.CourseName</td>
                                 <td>@item.CourseAmount</td>
@@ -128,7 +130,7 @@
                                 <td>@item.PaymentName</td>
                                 <td>@item.InstalmentCount</td>
                                 <td>
-                                    <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
+                                    <a id="deleteItem"  data-target="#confirmDeleteModal"
                                        data-toggle="modal"
                                        data-path="@item.ID">
                                         <i class="fas fa-trash" style="color: #e74a3b"></i>
@@ -139,6 +141,7 @@
                                        data-path="@item.ID">
                                         <i class="fas fa-edit" style="color:darkgreen"></i>
                                     </a>
+                                    <input type="hidden" id="deleteItemValue" />
                                     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">

@@ -78,7 +78,7 @@
         </div>
     </div>
 </div>
-@if (Model.Students?.Count == 0)
+@if (Model.Payments?.Count == 0)
 {
     <style>
         .alert-container {
@@ -116,10 +116,12 @@ else
             <tr>
                 <th>Öğrenci Adı/Soyadı</th>
                 <th>Kurs</th>
-                <th>Kurs Tutarı</th>
-                <th>Ödeme Günü</th>
-                <th>Ödeme Tipi</th>
-                <th>Taksit</th>
+                <th>Ödenen Tutar</th>
+                <th>Ödeme Tarihi</th>
+                <th>Kalan Tutar</th>
+                @*<th>Ödeme Günü</th>
+        <th>Ödeme Tipi</th>
+        <th>Taksit</th>*@
                 <th>Seçenekler</th>
             </tr>
         </thead>
@@ -129,8 +131,10 @@ else
                 <tr>
                     <td>@item.StudentName</td>
                     <td>@item.CourseName</td>
+                    <td>@item.Amount</td>
                     <td>@item.PaymentDate</td>
-                    <td>@item.Installments</td>
+                    <td></td>
+                    <!--<-->@*td>@item.Installments</td>*@
                     <td>
                         <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
                            data-toggle="modal"
@@ -192,7 +196,7 @@ else
             </div>*@
                         <div class="form-group w-100 col-md-12">
                             <label>Öğrenciler</label>
-                            <select id="students" class="form-select w-100" name="SudentName" aria-label="Default select example">
+                            <select id="students" class="form-select w-100" name="StudentsId" aria-label="Default select example">
                                 <option value="0" selected>Öğrenci Seçiniz</option>
                                 @foreach (var item in @Model.Students)
                                 {
@@ -212,17 +216,17 @@ else
                     </div>
                     <div class="row">
                         <div class="form-group w-100 col-md-6">
-                            <label>Kurs Ücreti</label>
-                            <input type="text" name="CourseAmount" class="form-control" placeholder="Kurs Ücreti" />
+                            <label>Ödenecek Tutar</label>
+                            <input type="text" name="Amount" class="form-control" placeholder="Ödenen Tutar" />
                         </div>
                     </div>
 
                     <div class="row align-items-center">
                         <div class="form-group w-100 col-md-6">
-                            <label>Ödeme Günü</label>
-                            <input type="text" name="PaymentDay" class="form-control" placeholder="Ödeme Günü" />
+                            <label>Ödeme Tarihi</label>
+                            <input type="date" name="PaymentDate" class="form-control" placeholder="Ödeme Tarihi" />
                         </div>
-                        <div class="form-group col-md-6">
+                        @*<div class="form-group col-md-6">
                             <label>Ödeme Tipi</label>
                             <select class="form-select w-100" name="PaymentType" aria-label="Default select example">
                                 <option selected>Ödeme Tipi Seçiniz</option>
@@ -230,14 +234,14 @@ else
                                 <option value="1">Kredi Kartı</option>
                                 <option value="2">Taksit</option>
                             </select>
-                        </div>
+                        </div>*@
                     </div>
-                    <div class="row">
+                    @*<div class="row">
                         <div class="form-group col-md-6">
                             <label>Taksit Sayısı</label>
                             <input type="text" name="InstalmentCount" class="form-control" placeholder="Taksit Sayısı" />
                         </div>
-                    </div>
+                    </div>*@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>
@@ -266,7 +270,7 @@ else
                             @*<label>Öğrenci Adı</label>
                     <input type="text" id="StudentName" name="StudentName" class="form-control" placeholder="Öğrenci Adınızı Giriniz" />
                 </div>*@
-                            <select class="form-select w-100" name="SudentName" aria-label="Default select example">
+                            <select class="form-select w-100" name="StudentsId" aria-label="Default select example">
                                 <option selected>Öğrenci Seçiniz</option>
                                 @foreach (var item in @Model.Students)
                                 {
