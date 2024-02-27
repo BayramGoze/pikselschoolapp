@@ -1778,6 +1778,7 @@
     <Content Include="Scripts\js\demo\chart-bar-demo.js" />
     <Content Include="Scripts\js\demo\chart-pie-demo.js" />
     <Content Include="Scripts\js\demo\datatables-demo.js" />
+    <Content Include="Scripts\js\piksel.js" />
     <Content Include="Scripts\js\sb-admin-2.js" />
     <Content Include="Scripts\js\sb-admin-2.min.js" />
     <Content Include="Web.config" />
@@ -1816,6 +1817,7 @@
     <Compile Include="ViewModels\Login\LoginViewModel.cs" />
     <Compile Include="ViewModels\Payment\PaymentResponseViewModel.cs" />
     <Compile Include="ViewModels\Payment\PaymentViewModel.cs" />
+    <Compile Include="ViewModels\Payment\UpdatePaymentViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />

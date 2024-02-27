@@ -25,6 +25,7 @@ namespace WebApplication1.Controllers
                 var userlogin = context.Users.FirstOrDefault(x => x.UserName == model.Email && x.Password==model.Password && x.IsActive==true);
                 if (userlogin != null)
                 {
+                   TempData["useremail"] = userlogin.UserName;
                    return RedirectToAction("Index", "Student");
                 }
                 return RedirectToAction("Index");

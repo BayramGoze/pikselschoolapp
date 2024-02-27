@@ -6,15 +6,11 @@
 <script src="~/Content/vendor/jquery/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        var path_to_delete;
-        $(".deleteItem").click(function (e) {
-            path_to_delete = $(this).data('path');
-        });
         $('#confirmDeleteBtn').click(function () {
-            var id = $('#deleteItem').data('path');
+            var deleteItemId = parseInt($('#deleteItemValue').val());
             $.ajax({
                 type: "GET",
-                url: '/Payment/DeleteStudent?Id=' + id, // the method we are calling
+                url: '/Payment/DeletePayment?Id=' + deleteItemId, // the method we are calling
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
                     window.location.reload();
@@ -29,17 +25,19 @@
             var id = $(this).data('path');
             $.ajax({
                 type: "GET",
-                url: '/Payment/GetStudent?ID=' + id,
+                url: '/Payment/GetPayment?Id=' + id,
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
+                    console.log('result', result);
                     $('#UpdateModal').modal('show');
-                    $('#StudentName').val(result.StudentName);
+                    $('#StudentsId').val(result.StudentsId);
                     $('#CourseId').val(result.CourseId);
-                    $('#CourseAmount').val(result.CourseAmount);              
-                    $('#PaymentDay').val(result.PaymentDay);
-                    $('#ID').val(result.ID);
-                    $('#PaymentType').val(result.PaymentType);               
-                    $('#InstalmentCount').val(result.InstalmentCount);
+                    $('#Amount').val(result.Amount);             
+                    if (result.PaymentDate && result.PaymentDate != null) {
+                        $('#PaymentDate').val(CalculateDate(result.PaymentDate));
+                    }
+                   
+                    
                 },
                 error: function (result) {
                     alert('Sistemsel bir hata oluştu!');
@@ -69,6 +67,16 @@
                 }
             });
         });
+
+        function CalculateDate(startEndDay) {
+            var value = new Date(parseInt(startEndDay.toString().substr(6)));
+            var day = ("0" + value.getDate()).slice(-2);
+            var month = ("0" + (value.getMonth() + 1)).slice(-2);
+            return value.getFullYear() + "-" + month + "-" + day;
+        }
+    });
+    $(document).on("click", "#deleteItem", function () {
+        $('#deleteItemValue').val($(this).data('path'));
     });
 </script>
 <div class="container">
@@ -135,40 +143,41 @@ else
                     <td>@item.PaymentDate</td>
                     <td></td>
                     <!--<-->@*td>@item.Installments</td>*@
-                    <td>
-                        <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
-                           data-toggle="modal"
-                           data-path="@item.Id">
-                            <i class="fas fa-trash" style="color: #e74a3b"></i>
-                        </a>
-                        <a id="edit"
-                           class="edit"
-                           data-toggle="modal"
-                           data-path="@item.Id">
-                            <i class="fas fa-edit" style="color:darkgreen"></i>
-                        </a>
-                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Silmek istediğinizden emin misiniz?</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
-                                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-                                            <i class="fas fa-trash"></i> Evet, Sil
-                                        </button>
-                                    </div>
+                <td>
+                    <a id="deleteItem" class="deleteItem" data-target="#confirmDeleteModal"
+                       data-toggle="modal"
+                       data-path="@item.Id">
+                        <i class="fas fa-trash" style="color: #e74a3b"></i>
+                    </a>
+                    <a id="edit"
+                       class="edit"
+                       data-toggle="modal"
+                       data-path="@item.Id">
+                        <i class="fas fa-edit" style="color:darkgreen"></i>
+                    </a>
+                    <input type="hidden" id="deleteItemValue" />
+                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmDeleteModalLabel">Silme İşlemi</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Silmek istediğinizden emin misiniz?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                                        <i class="fas fa-trash"></i> Evet, Sil
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </td>
+                    </div>
+                </td>
                 </tr>
             }
         </tbody>
@@ -270,7 +279,7 @@ else
                             @*<label>Öğrenci Adı</label>
                     <input type="text" id="StudentName" name="StudentName" class="form-control" placeholder="Öğrenci Adınızı Giriniz" />
                 </div>*@
-                            <select class="form-select w-100" name="StudentsId" aria-label="Default select example">
+                            <select class="form-select w-100" id="StudentsId" name="StudentsId" aria-label="Default select example">
                                 <option selected>Öğrenci Seçiniz</option>
                                 @foreach (var item in @Model.Students)
                                 {
@@ -291,18 +300,18 @@ else
                     </div>
                     <div class="row">
                         <div class="form-group w-100 col-md-6">
-                            <label>Kurs Ücreti</label>
-                            <input type="text" id="CourseAmount" name="CourseAmount" class="form-control" placeholder="Kurs Ücreti" />
+                            <label>Ödenecek Tutar</label>
+                            <input type="text" id="Amount" name="Amount" class="form-control" placeholder="Ödenecek Tutar" />
                         </div>
 
                     </div>
 
                     <div class="row align-items-center">
                         <div class="form-group w-100 col-md-6">
-                            <label>Ödeme Günü</label>
-                            <input type="text" id="PaymentDay" name="PaymentDay" class="form-control" placeholder="Ödeme Günü" />
+                            <label>Ödeme Tarihi</label>
+                            <input type="date" id="PaymentDate" name="PaymentDate" class="form-control" placeholder="Ödeme Tarihi" />
                         </div>
-                        <div class="form-group col-md-6">
+                        @*<div class="form-group col-md-6">
                             <label>Ödeme Tipi</label>
                             <select class="form-select w-100" id="PaymentType" name="PaymentType" aria-label="Default select example">
                                 <option selected>Ödeme Tipi Seçiniz</option>
@@ -310,14 +319,14 @@ else
                                 <option value="1">Kredi Kartı</option>
                                 <option value="2">Taksit</option>
                             </select>
-                        </div>
+                        </div>*@
                     </div>
-                    <div class="row">
+                    @*<div class="row">
                         <div class="form-group col-md-6">
                             <label>Taksit Sayısı</label>
                             <input type="text" id="InstalmentCount" name="InstalmentCount" class="form-control" placeholder="Taksit Sayısı" />
                         </div>
-                    </div>
+                    </div>*@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>

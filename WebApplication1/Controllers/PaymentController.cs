@@ -70,36 +70,31 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Index");
         }
         [HttpGet]
-        public JsonResult GetStudent(int ID)
+        public JsonResult GetPayment(int ID)
         {
             using (AcademyContext context = new AcademyContext())
             {
-                var student = context.Students.FirstOrDefault(x => x.ID == ID);
-                return Json(student, JsonRequestBehavior.AllowGet);
+                var payment = context.Payments.FirstOrDefault(x => x.Id == ID);
+                return Json(payment, JsonRequestBehavior.AllowGet);
             }
         }
 
         [HttpPost]
-        public ActionResult UpdateStudent(UpdateStudentViewModel model)
+        public ActionResult UpdatePayment( UpdatePaymentViewModel model)
         {
 
             using (AcademyContext context = new AcademyContext())
             {
-                var student = context.Students.FirstOrDefault(x => x.ID == model.ID);
-                if (student != null)
+                var payment = context.Payments.FirstOrDefault(x => x.Id == model.Id);
+                if (payment != null)
                 {
 
-                    student.StudentName = model.StudentName;
+                    payment.Amount = model.Amount;
+                    payment.CourseId = model.CourseId;
+                    payment.StudentsId = model.StudentsId;
+                    payment.PaymentDate= model.PaymentDate;
+                    payment.Installments = model.Installments;
 
-
-                    student.CourseId = model.CourseId;
-                    student.CourseAmount = model.CourseAmount;
-
-
-                    student.PaymentDay = model.PaymentDay;
-                    student.PaymentType = model.PaymentType;
-
-                    student.InstalmentCount = model.InstalmentCount;
                     context.SaveChanges();
                 }
             }
@@ -107,11 +102,11 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Index");
         }
         [HttpGet]
-        public ActionResult DeleteStudent(int Id)
+        public ActionResult DeletePayment(int Id)
         {
             using (AcademyContext context = new AcademyContext())
             {
-                var student = context.Students.FirstOrDefault(x => x.ID == Id);
+                var student = context.Payments.FirstOrDefault(x => x.Id == Id);
                 if (student != null)
                 {
                     student.Deleted = true;
