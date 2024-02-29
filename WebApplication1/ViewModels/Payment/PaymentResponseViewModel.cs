@@ -11,5 +11,6 @@ namespace WebApplication1.ViewModels.Payment
     {
         public List<StudentResponseViewModel> Students { get; set; }
         public List<PaymentViewModel>Payments { get; set; }
+        public List<UpdatePaymentViewModel> UpdatePayments { get; set; }
     }
 }

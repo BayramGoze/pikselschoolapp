@@ -293,7 +293,10 @@ else
                         <div class="form-group w-100 col-md-12">
                             <label>Kurs Seçiniz</label>
                             <select class="form-select w-100" id="CourseId" name="CourseId" aria-label="Default select example">
-                                <option selected>Kurs Seçiniz</option>                              
+                               @foreach (var item in Model.Payments)
+                               {                        
+                                   <option value="@item.CourseId">@item.CourseName</option>
+                               }
                             </select>
                         </div>
 
